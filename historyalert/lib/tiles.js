@@ -11,7 +11,7 @@ function current_pinned_tiles() {
 }
 
 function previously_pinned_tiles() {
-    //tabs that used to be pinned
+    //tiles that used to be pinned
     //Input: none
     //Output: a list of URLs
     //TODO
