@@ -33,3 +33,4 @@ function getHistory(){
 	//close the results container
 	cont.containerOpen = false;
 }
+

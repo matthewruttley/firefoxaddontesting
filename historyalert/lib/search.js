@@ -4,6 +4,15 @@
 
 //var uri = require("URI")  // <-- will this work?
 
+function LDA_cluster_searches(how_many_days_into_the_past){
+    //tries to cluster a user's searches using LDA
+    //input: an integer representing how many days of history to look into
+    //output: a list of lists of clusters
+    //TODO
+    clusters = []
+    return clusters
+}
+
 function discoverSearchVariables() {
     //Input: none
     //Output: a list of domains and their search GET variables
