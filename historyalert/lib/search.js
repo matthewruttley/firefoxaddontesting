@@ -1,16 +1,47 @@
-//Module to analyze search keywords in a user's browsing history
-//Created on 2014-07-09 by mruttley
-//untested so far.
+//Purpose: Analyzes search keywords in the user's browsing history
+//Created: 2014-07-09 by mruttley
+//Last mod: 2014-07-11 
 
 //var uri = require("URI")  // <-- will this work?
 
-function LDA_cluster_searches(how_many_days_into_the_past){
-    //tries to cluster a user's searches using LDA
-    //input: an integer representing how many days of history to look into
-    //output: a list of lists of clusters
-    //TODO
-    clusters = []
-    return clusters
+function getSearchKeywords(searchGetVariables, howManyDays){
+	//Input: an object of search get variables calculated by discoverSearchVariables()
+    //Output: a flat list of the user's search keywords
+    
+    //Process: 
+    //1. Iterate through entire history
+    //2. If the domain is in the get variable object, 
+	//3. Check for known query variables
+	//4. Add to searches object
+	//5. Return searches
+
+    //issues: often searches are kept as get variables throughout the entire session
+    //on sites like Amazon. This means that we need to dedupe on a per-session basis. 
+    
+    searches = {};
+    var history = getHistory();
+    
+    for (var url in history) {
+		domain = getDomain(history[url])
+        if (searchGetVariables[domain]) {
+            //if the domain exists in the object passed to the function
+			url_vars = parseGetVariables(history[url]) //grab the get variables
+			//get the variables we should be looking for
+			domain_vars = Object.keys(searchGetVariables[domain])
+			for (var dv in domain_vars) {
+			    //check if that domain get variable is in the url
+				if (domain_vars[dv] in url_vars) {
+					query = url_vars[domain_vars[dv]] //grab the query from the urlvars object
+				    if (query in searches) {
+						searches[query] += 1
+				    }else{
+						searches[query] = 1
+					}
+				}
+			}
+        }
+    }
+	return Object.keys(searches) //just return the search terms, deduped
 }
 
 function discoverSearchVariables() {
@@ -121,24 +152,11 @@ function parseGetVariables(url) {
     return getVars
 }
 
-function getSearchKeywords(searchGetVariables, howManyDays){
-	//Input: an object of search get variables calculated by discoverSearchVariables()
-    //Output: a flat list of the user's search keywords
-    
-    //Process: 
-    //1. Iterate through entire history
-    //1. If the domain is in the get variable object, 
-	//then rescans, using the variables and domains learned
-
-    //issues: often searches are kept as get variables throughout the entire session
-    //on sites like Amazon. This means that we need to dedupe on a per-session basis. 
-    
-    searches = [];
-    var history = getHistory();
-    
-    for (var url in history) {
-        if (searchGetVariables[history[url]]) {
-            //TODO
-        }
-    }
+function LDA_cluster_searches(how_many_days_into_the_past){
+    //tries to cluster a user's searches using LDA
+    //input: an integer representing how many days of history to look into
+    //output: a list of lists of clusters
+    //TODO
+    clusters = []
+    return clusters
 }
