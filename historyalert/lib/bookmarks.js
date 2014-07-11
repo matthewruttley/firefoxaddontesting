@@ -1,13 +1,20 @@
 //Module to analyze the users current bookmarks
 //mruttley 2014-07-10
+const {Cc, Ci, Cu} = require("chrome");
+const {DBUtils} = require("DBUtils");
 
-function all_current_bookmarks() {
-    //A flat list of lists containing all the user's current bookmarks
-    //Input: none
-    //Output: a list like [["some title", "domain.com"], [..., ...], ...]
-    //TODO
-    bookmark_urls = []
-    return bookmark_urls
+Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js");
+
+exports.all_current_bookmarks = function() {
+    let deferred = Promise.defer();
+    let bookmarks = [];
+
+    DBUtils.getBookmarks(item => {
+        if (item["url"].slice(0, 6) != "place:") {
+            bookmarks.push(item);
+        }
+    }).then(() => { deferred.resolve(bookmarks); });
+    return deferred.promise;
 }
 
 function bookmark_tree(){

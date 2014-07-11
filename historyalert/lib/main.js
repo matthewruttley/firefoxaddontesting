@@ -2,7 +2,11 @@
 //Created on 2014-07-03 by mruttley
 //for tutorial purposes only, I'm sure there are much more efficient ways of doing this
 
-const {Cc,Ci} = require("chrome");
+const {Cc, Ci, Cu} = require("chrome");
+const {all_current_bookmarks} = require("bookmarks");
+
+Cu.import("resource://gre/modules/Task.jsm");
+
 var buttons = require("sdk/ui/button/action")
 
 var button = buttons.ActionButton({
@@ -34,6 +38,13 @@ function logTheLastFiveHistoryItems(){
 	}
 }
 
+function logBookmarks() {
+	Task.spawn(function* () {
+		return yield all_current_bookmarks();
+	}).then((bookmarks) => {
+		console.log(JSON.stringify(bookmarks));
+	});
+}
 
 
 
