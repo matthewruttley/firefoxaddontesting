@@ -4,6 +4,7 @@
 
 const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
+const {current_pinned_tiles} = require("tiles");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -44,6 +45,10 @@ function logBookmarks() {
 	}).then((bookmarks) => {
 		console.log(JSON.stringify(bookmarks));
 	});
+}
+
+function logPinnedTiles() {
+	console.log(JSON.stringify(current_pinned_tiles()));
 }
 
 
