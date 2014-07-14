@@ -4,7 +4,7 @@
 
 const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
-const {current_pinned_tiles} = require("tiles");
+const {current_pinned_tiles, killed_tiles} = require("tiles");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -51,5 +51,12 @@ function logPinnedTiles() {
 	console.log(JSON.stringify(current_pinned_tiles()));
 }
 
+function logKilledTiles() {
+	Task.spawn(function* () {
+		return yield killed_tiles();
+	}).then((killed_tiles) => {
+		console.log(JSON.stringify(killed_tiles));
+	});
+}
 
 

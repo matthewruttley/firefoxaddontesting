@@ -21,7 +21,12 @@ const SQL = {
     "FROM moz_bookmarks as b " +
     "LEFT JOIN moz_places as p " +
     "ON b.fk = p.id " +
-    "WHERE p.url <> \"\""
+    "WHERE p.url <> \"\"",
+
+  getTileURLS:
+    "SELECT title, url " +
+    "FROM moz_places " +
+    "ORDER BY frecency DESC LIMIT 100"
 };
 
 let DBUtils = {
@@ -35,6 +40,13 @@ let DBUtils = {
     return this._execute(SQL.getBookmarks, {
       columns: ["title", "url"],
       onRow: handleBookmark,
+    });
+  },
+
+  getTileURLS: function(handleURLS) {
+    return this._execute(SQL.getTileURLS, {
+      columns: ["title", "url"],
+      onRow: handleURLS,
     });
   },
 
