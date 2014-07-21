@@ -11,6 +11,8 @@ Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetter(this, "PlacesUtils", "resource://gre/modules/PlacesUtils.jsm");
 
+let fh = Cc["@mozilla.org/satchel/form-history;1"].getService(Ci.nsIFormHistory2);
+
 /**
  * Store the SQL statements used for this file together for easy reference
  */
@@ -26,7 +28,12 @@ const SQL = {
   getTileURLS:
     "SELECT title, url " +
     "FROM moz_places " +
-    "ORDER BY frecency DESC LIMIT 100"
+    "ORDER BY frecency DESC LIMIT 100",
+
+  getFormHistory:
+    "SELECT fieldname, value, timesUsed " +
+    "FROM moz_formhistory " +
+    "ORDER BY timesUsed DESC"
 };
 
 let DBUtils = {
@@ -47,6 +54,13 @@ let DBUtils = {
     return this._execute(SQL.getTileURLS, this._placesDB, {
       columns: ["title", "url"],
       onRow: handleURLS,
+    });
+  },
+
+  getFormHistory: function(handleFormHistory) {
+    return this._execute(SQL.getFormHistory, this._formHistoryDB, {
+      columns: ["fieldname", "value", "timesUsed"],
+      onRow: handleFormHistory,
     });
   },
 
@@ -171,6 +185,10 @@ let DBUtils = {
 
 XPCOMUtils.defineLazyGetter(DBUtils, "_placesDB", function() {
   return PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
+});
+
+XPCOMUtils.defineLazyGetter(DBUtils, "_formHistoryDB", function() {
+  return fh.DBConnection;
 });
 
 exports.DBUtils = DBUtils;
