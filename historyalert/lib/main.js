@@ -5,6 +5,7 @@
 const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
 const {current_pinned_tiles, killed_tiles} = require("tiles");
+const {get_form_history} = require("formHistory");
 const {pinned_tabs} = require("tabs");
 
 Cu.import("resource://gre/modules/Task.jsm");
@@ -64,3 +65,10 @@ function logPinnedTabs() {
 	console.log(JSON.stringify(pinned_tabs()));
 }
 
+function logFormHistory() {
+	Task.spawn(function* () {
+		return yield get_form_history();
+	}).then((formHistory) => {
+		console.log(JSON.stringify(formHistory));
+	});
+}
