@@ -37,14 +37,14 @@ let DBUtils = {
    * Fetch all bookmarks
    */
   getBookmarks: function(handleBookmark) {
-    return this._execute(SQL.getBookmarks, {
+    return this._execute(SQL.getBookmarks, this._placesDB, {
       columns: ["title", "url"],
       onRow: handleBookmark,
     });
   },
 
   getTileURLS: function(handleURLS) {
-    return this._execute(SQL.getTileURLS, {
+    return this._execute(SQL.getTileURLS, this._placesDB, {
       columns: ["title", "url"],
       onRow: handleURLS,
     });
@@ -73,7 +73,7 @@ let DBUtils = {
    * @returns Promise for when the statement completes with value dependant on
    *          the optional values passed in.
    */
-  _execute: function PIS__execute(sql, optional={}) {
+  _execute: function PIS__execute(sql, db, optional={}) {
     let {columns, onRow, params} = optional;
 
     // Check for stop flag
@@ -90,7 +90,7 @@ let DBUtils = {
     }
     let statement = this._cachedStatements[sql].statement;
     if (statement == null) {
-      statement = this._db.createAsyncStatement(sql);
+      statement = db.createAsyncStatement(sql);
       this._cachedStatements[sql].statement = statement;
     }
 
@@ -169,7 +169,7 @@ let DBUtils = {
   },
 }
 
-XPCOMUtils.defineLazyGetter(DBUtils, "_db", function() {
+XPCOMUtils.defineLazyGetter(DBUtils, "_placesDB", function() {
   return PlacesUtils.history.QueryInterface(Ci.nsPIPlacesDatabase).DBConnection;
 });
 
