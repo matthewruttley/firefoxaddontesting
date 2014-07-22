@@ -6,7 +6,7 @@ const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
 const {current_pinned_tiles, killed_tiles} = require("tiles");
 const {get_form_history} = require("formHistory");
-const {pinned_tabs} = require("tabs");
+const {pinned_tabs, add_tab_logging, page_duration} = require("tabs");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -22,6 +22,10 @@ var button = buttons.ActionButton({
 	},
 	onClick: logTheLastFiveHistoryItems
 })
+
+exports.main = function(options, callbacks) {
+  add_tab_logging();
+};
 
 function logTheLastFiveHistoryItems(){
 	//Shows the last five history items in the console
@@ -71,4 +75,8 @@ function logFormHistory() {
 	}).then((formHistory) => {
 		console.log(JSON.stringify(formHistory));
 	});
+}
+
+function logPageDuration() {
+	console.log(page_duration());
 }
