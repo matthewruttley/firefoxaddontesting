@@ -4,9 +4,11 @@
 
 const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
+const {storage} = require("sdk/simple-storage");
 const {current_pinned_tiles, killed_tiles} = require("tiles");
 const {get_form_history} = require("formHistory");
 const {pinned_tabs, add_tab_logging, page_duration} = require("tabs");
+const {add_clipboard_logging} = require("clipboard");
 
 Cu.import("resource://gre/modules/Task.jsm");
 
@@ -25,6 +27,7 @@ var button = buttons.ActionButton({
 
 exports.main = function(options, callbacks) {
   add_tab_logging();
+  add_clipboard_logging();
 };
 
 function logTheLastFiveHistoryItems(){
@@ -79,4 +82,8 @@ function logFormHistory() {
 
 function logPageDuration() {
 	console.log(page_duration());
+}
+
+function logClipboardContent() {
+	console.log(JSON.stringify(storage.clipboard));
 }
