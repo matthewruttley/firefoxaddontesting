@@ -92,9 +92,13 @@ exports.page_duration = function() {
 }
 
 exports.pinned_tabs = function() {
+  if (!storage.pinnedTabs) {
+    storage.pinnedTabs = {};
+  }
   let pinned_tabs = [];
   for each (let tab in tabs) {
     if (tab.isPinned) {
+      storage.pinnedTabs[tab.title] = tab.url;
       pinned_tabs.push({"title": tab.title, "url": tab.url});
     }
   }

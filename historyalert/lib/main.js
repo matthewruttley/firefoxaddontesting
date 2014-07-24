@@ -71,6 +71,7 @@ function logKilledTiles() {
 
 function logPinnedTabs() {
 	console.log(JSON.stringify(pinned_tabs()));
+	console.log(JSON.stringify(storage.pinnedTabs));
 }
 
 function logFormHistory() {
