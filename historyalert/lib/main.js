@@ -65,6 +65,7 @@ function logKilledTiles() {
 		return yield killed_tiles();
 	}).then((killed_tiles) => {
 		console.log(JSON.stringify(killed_tiles));
+		console.log(JSON.stringify(storage.killedTiles)); // All previously killed tiles
 	});
 }
 

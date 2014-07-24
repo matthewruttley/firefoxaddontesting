@@ -2,6 +2,7 @@
 //mruttley 2014-07-10
 const {Cu} = require("chrome");
 const {DBUtils} = require("DBUtils");
+const {storage} = require("sdk/simple-storage");
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/commonjs/sdk/core/promise.js");
@@ -31,6 +32,9 @@ exports.killed_tiles = function() {
     let deferred = Promise.defer();
     let killed_directory_tiles = [];
     let killed_history_tiles = [];
+    if (!storage.killedTiles) {
+        storage.killedTiles = {};
+    }
 
     // Check for killed directory tiles.
     let directoryTilesDeferred = Promise.defer();
@@ -55,6 +59,9 @@ exports.killed_tiles = function() {
 
     Promise.all([directoryTilesDeferred.promise, historyTilesDeferred.promise]).then(function(promises) {
         let killed_tiles = killed_history_tiles.concat(killed_directory_tiles);
+        for (let killedTile of killed_tiles) {
+            storage.killedTiles[killedTile.url] = killedTile.title; // Adding killed tiles to storage.
+        }
         deferred.resolve(killed_tiles);
     });
     return deferred.promise;
