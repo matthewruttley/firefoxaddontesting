@@ -13,6 +13,17 @@ Cu.import("resource://gre/modules/DirectoryLinksProvider.jsm");
 
 let tabs = require("sdk/tabs");
 
+function getEquivalentGridLinkPosition(msg, rowCount, columnCount) {
+    let links = NewTabUtils.links.getLinks();
+    let gridLinks = links.slice(0, (rowCount * columnCount + 1));
+    for (let i = 0; i < gridLinks.length; i++) {
+        if (gridLinks[i].url == msg.url && gridLinks[i].title == msg.title) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 exports.add_moved_tiles_logging = function() {
     if (!storage.movedTiles) {
         storage.movedTiles = {};
@@ -26,25 +37,19 @@ exports.add_moved_tiles_logging = function() {
                 contentScriptFile: data.url("tiles_content_script.js"),
             });
             worker.port.on("dragstart", function(msg) {
-                let links = NewTabUtils.links.getLinks();
-                let gridLinks = links.slice(0, (rowCount * columnCount + 1));
-                for (let i = 0; i < gridLinks.length; i++) {
-                    if (gridLinks[i].url == msg.url && gridLinks[i].title == msg.title) {
-                        if (!storage.movedTiles[msg.url]) {
-                            storage.movedTiles[msg.url] = [];
-                        }
-                        storage.movedTiles[msg.url].push({"startPosition": i});
+                let i = getEquivalentGridLinkPosition(msg, rowCount, columnCount);
+                if (i > -1) {
+                    if (!storage.movedTiles[msg.url]) {
+                        storage.movedTiles[msg.url] = [];
                     }
+                    storage.movedTiles[msg.url].push({"startPosition": i});
                 }
             });
             worker.port.on("dragend", function(msg) {
-                let links = NewTabUtils.links.getLinks();
-                let gridLinks = links.slice(0, (rowCount * columnCount + 1));
-                for (let i = 0; i < gridLinks.length; i++) {
-                    if (gridLinks[i].url == msg.url && gridLinks[i].title == msg.title) {
-                        let lastMoveIndex = storage.movedTiles[msg.url].length - 1;
-                        storage.movedTiles[msg.url][lastMoveIndex]["endPosition"] = i;
-                    }
+                let i = getEquivalentGridLinkPosition(msg, rowCount, columnCount);
+                if (i > -1) {
+                    let lastMoveIndex = storage.movedTiles[msg.url].length - 1;
+                    storage.movedTiles[msg.url][lastMoveIndex]["endPosition"] = i;
                 }
             });
         }
