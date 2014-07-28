@@ -5,7 +5,7 @@
 const {Cc, Ci, Cu} = require("chrome");
 const {all_current_bookmarks} = require("bookmarks");
 const {storage} = require("sdk/simple-storage");
-const {current_pinned_tiles, killed_tiles} = require("tiles");
+const {current_pinned_tiles, killed_tiles, add_moved_tiles_logging} = require("tiles");
 const {get_form_history} = require("formHistory");
 const {pinned_tabs, add_tab_logging, page_duration} = require("tabs");
 const {add_clipboard_logging} = require("clipboard");
@@ -28,6 +28,7 @@ var button = buttons.ActionButton({
 exports.main = function(options, callbacks) {
   add_tab_logging();
   add_clipboard_logging();
+  add_moved_tiles_logging();
 };
 
 function logTheLastFiveHistoryItems(){
@@ -58,6 +59,10 @@ function logBookmarks() {
 
 function logPinnedTiles() {
 	console.log(JSON.stringify(current_pinned_tiles()));
+}
+
+function logMovedTiles() {
+	console.log(JSON.stringify(storage.movedTiles));
 }
 
 function logKilledTiles() {
